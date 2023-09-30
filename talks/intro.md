@@ -1,12 +1,44 @@
 ---
 # YAML metadata
-title: "A talk about something"
+title: "Data Science and Machine Learning in Practice"
 author: "Matthew Brett"
 linkcolor: blue
 urlcolor: blue
 bibliography: refs.bib
 suppress-bibliography: true
 ---
+
+# Introduction
+
+We have two tasks:
+
+* "Data science and machine learning" - go deeper into the world of data
+  science analysis.
+* "in practice" - learn how to collaborate with tools for code.
+
+# The structure
+
+There are two parts to the structure:
+
+* 
+
+# Data science and machine learning
+
+# In practice
+
+<!---
+Notes:
+
+* Becoming an apprentice
+
+Three themes:
+
+* [The course textbook](https://lisds.github.com/dsip)
+* [The Berkeley intermediate data science textbook](https://learningds.org)
+* [The textbook for last year's courses](https://lisds.github.com/textbook)
+
+* 
+-->
 
 # Funny picture
 

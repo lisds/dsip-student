@@ -1,0 +1,163 @@
+---
+jupyter:
+  jupytext:
+    notebook_metadata_filter: all,-language_info
+    split_at_heading: true
+    text_representation:
+      extension: .Rmd
+      format_name: rmarkdown
+      format_version: '1.2'
+      jupytext_version: 1.15.2
+  kernelspec:
+    display_name: Python 3 (ipykernel)
+    language: python
+    name: python3
+---
+
+```{python}
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+# %matplotlib inline
+pd.set_option('mode.copy_on_write', True)
+```
+
+We are investigating the claim, made in [this substack article](https://thenobodywhoknowseverybody.substack.com/p/england-annus-horribilis), that there are more deaths in the UK from all causes among people vaccinated for Covid-19, compared to unvaccinated people.
+
+
+The data comes from [this ONS page](https://www.ons.gov.uk/peoplepopulationandcommunity/birthsdeathsandmarriages/deaths/datasets/deathsbyvaccinationstatusengland).  Specifically, we have [this dataset](https://www.ons.gov.uk/file?uri=/peoplepopulationandcommunity/birthsdeathsandmarriages/deaths/datasets/deathsbyvaccinationstatusengland/deathsoccurringbetween1april2021and31may2023/referencetableaug2023.xlsx).
+
+
+The methodology article: <https://www.ons.gov.uk/peoplepopulationandcommunity/birthsdeathsandmarriages/deaths/methodologies/weeklycovid19agestandardisedmortalityratesbyvaccinationstatusenglandmethodology>.
+
+Also see the "Notes" worksheet in the file below.
+
+```{python}
+xlf = pd.ExcelFile('referencetableaug2023.xlsx')
+xlf.sheet_names
+```
+
+```{python}
+table_4 = pd.read_excel(xlf, sheet_name='Table 4')
+table_4.head()
+```
+
+```{python}
+table_4 = pd.read_excel(xlf, sheet_name='Table 4',
+                        skiprows=3)
+table_4.head()
+```
+
+```{python}
+table_4.tail()
+```
+
+```{python}
+table_4['Cause of Death'].value_counts()
+```
+
+```{python}
+all_causes = table_4[table_4['Cause of Death'] == 'All causes']
+all_causes.tail()
+```
+
+```{python}
+all_causes['Sex'].value_counts()
+```
+
+```{python}
+all_causes['Vaccination status'].value_counts()
+```
+
+```{python}
+asmr_col = "Age-standardised mortality rate / 100,000 person-years"
+all_causes[asmr_col]
+```
+
+```{python}
+x_asmr = all_causes[all_causes[asmr_col] == 'x']
+x_asmr.tail()
+```
+
+```{python}
+x_asmr['Count of deaths'].value_counts()
+```
+
+```{python}
+x_asmr['Person-years'].plot.hist(bins=50)
+```
+
+```{python}
+all_causes['Person-years'].plot.hist(bins=100)
+```
+
+```{python}
+np.sum(all_causes['Person-years'] > 1000) / len(all_causes)
+```
+
+```{python}
+gt_100_all_causes = all_causes[
+   all_causes['Person-years'] > 1000
+]
+gt_100_all_causes.head()
+```
+
+```{python}
+gt_100_all_causes[asmr_col].value_counts()
+```
+
+```{python}
+def fix_asmr(row):
+    asmr_val = row[asmr_col]
+    if asmr_val != 'x':
+        return float(asmr_val)
+    assert row['Count of deaths'] == '<3'
+    return 0
+```
+
+```{python}
+gt_100_all_causes['asmr_fixed'] = gt_100_all_causes.apply(
+    fix_asmr, axis='columns'
+)
+gt_100_all_causes.head()
+```
+
+```{python}
+gt_100_all_causes['asmr_fixed'].plot.hist(bins=100)
+```
+
+```{python}
+gt_100_all_causes['vaccinated'] = gt_100_all_causes['Vaccination status'] != "Unvaccinated"
+gt_100_all_causes.head()
+```
+
+```{python}
+gt_100_all_causes.groupby('vaccinated')['asmr_fixed'].mean()
+```
+
+```{python}
+by_age = gt_100_all_causes.groupby(['vaccinated', 'Age group'])['asmr_fixed'].mean()
+by_age
+```
+
+```{python}
+by_age.loc[True] / by_age.loc[False]
+```
+
+```{python}
+by_year = gt_100_all_causes.groupby(['vaccinated', 'Year'])['asmr_fixed'].mean()
+by_year
+```
+
+```{python}
+by_year.loc[True] / by_year[False]
+```
+
+```{python}
+by_sex = gt_100_all_causes.groupby(['vaccinated', 'Sex'])['asmr_fixed'].mean()
+by_sex
+```
+
+```{python}
+by_sex.loc[True] / by_sex.loc[False]
+```
