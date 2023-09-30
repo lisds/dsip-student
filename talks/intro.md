@@ -40,9 +40,12 @@ Three themes:
 * 
 -->
 
-# Funny picture
+# Data science tasks
 
-![](images/some_picture.png){width=100%}
+From the [O'Reilly 2016 data science
+salary survey](https://www.oreilly.com/radar/2016-data-science-salary-survey-results/)
+
+![](images/data_science_tasks.png){width=80%}
 
 # Quote with citation
 
