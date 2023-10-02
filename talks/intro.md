@@ -130,7 +130,8 @@ were Covid-19–related), as compared with 1100 deaths in the non-booster group
 participants in the booster group and indicates a markedly lower incidence of
 adverse health outcomes in the booster group.
 
-[@hoeg2023vaccinee_bias]
+[@hoeg2023vaccinee_bias] (and [Github
+repository](https://github.com/tracybethhoeg/bostonmaskstudy-reanalysis))
 
 # Mask mandates for Covid
 
