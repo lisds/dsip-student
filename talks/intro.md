@@ -247,6 +247,7 @@ programmer](https://www.cs.utexas.edu/~EWD/transcriptions/EWD03xx/EWD340.html)
 
 * Google translate, calculators, and AI
 * [Where to?](https://www.youtube.com/watch?v=s-kdRdzxdZQ)
+* What do you think?
 
 # To the demo
 
