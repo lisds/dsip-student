@@ -1,3 +1,2 @@
 %.pdf: %.md
-	# No references, beamer output.
-	pandoc $< --citeproc -o $@ -t beamer
+	pandoc $< --citeproc --csl slide.csl -o $@ -t beamer

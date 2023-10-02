@@ -5,7 +5,6 @@ author: "Matthew Brett"
 linkcolor: blue
 urlcolor: blue
 bibliography: refs.bib
-suppress-bibliography: true
 ---
 
 # Introduction
@@ -72,7 +71,8 @@ now it’s "the data says."
 
 It is usually not easy to tell what the data "says".
 
-If you want to be able to make independent judgments about the modern world — you will need data science.
+If you want to be able to make independent judgments about the modern world
+— you will need data science.
 
 # The dark side
 
@@ -106,6 +106,52 @@ _The world is complicated\! Decisions are hard._
   * _Synthesize and explain_  our insights\.
 * Apply _critical thinking and skepticism_ at every step; and
 * Consider how our decisions  _affect others_.
+
+# Covid vaccine boosters
+
+> Death due to Covid-19 occurred in 65 participants in the booster group (0.16
+per 100,000 persons per day) and in 137 participants in the non-booster group
+(2.98 per 100,000 persons per day) Participants who received a booster at least
+5 months after a second dose of [the Pfizer vaccine] had 90% lower mortality
+due to Covid-19 than participants who did not receive a booster.
+
+[@arbel2021bnt162b2]
+
+# Limitations of Covid vaccine booster study
+
+> The authors reply: In response to Rohban: during our study period, 506 deaths
+occurred in the booster group (441 deaths were not related to Covid-19 and 65
+were Covid-19–related), as compared with 1100 deaths in the non-booster group
+(963 deaths were not related to Covid-19 and 137 were Covid-19–related).
+
+[@arbel2022authors]
+
+> This corresponds to a 94.8% lower mortality not related to Covid-19 among
+participants in the booster group and indicates a markedly lower incidence of
+adverse health outcomes in the booster group.
+
+[@hoeg2023vaccinee_bias]
+
+# Mask mandates for Covid
+
+![](images/cowger_figure.png){height=60%}
+
+["Universal Masking in School Works. New Data Shows How
+Well"](https://time.com/6231516/universal-masking-in-school-works-new-data-shows-how-well)
+
+[@cowger2022lifting]
+
+# Limitations of mask mandate study
+
+![](images/hoeg_whiteness.png)
+
+[@hoeg2023mask]
+
+# Limitations of mask mandate study
+
+![](images/hoeg_whole_year.png)
+
+[@hoeg2023mask]
 
 # The work of data science
 
@@ -176,6 +222,31 @@ Note the two distinct entry points!
 * [Matthew Brett](https://matthew.dynevor.org)
 * [Peter Rush](https://github.com/pxr687)
 
+# On humility
+
+> The competent programmer is fully aware of the strictly limited size of his
+own skull; therefore he approaches the programming task in full humility, and
+among other things he avoids clever tricks like the plague. ...
+>
+> ... Programming will remain very difficult, because once we have freed
+ourselves from the circumstantial cumbersomeness, we will find ourselves free
+to tackle the problems that are now well beyond our programming capacity....
+>
+> ...We shall do a much better programming job, provided that we approach the
+task with a full appreciation of its tremendous difficulty, provided that we
+stick to modest and elegant programming languages, provided that we respect the
+intrinsic limitations of the human mind and approach the task as Very Humble
+Programmers.
+
+[Edsger W. Dijkstra](https://en.wikipedia.org/wiki/Edsger_W._Dijkstra) — [The
+humble
+programmer](https://www.cs.utexas.edu/~EWD/transcriptions/EWD03xx/EWD340.html)
+
+# On AI
+
+* Google translate, calculators, and AI
+* [Where to?](https://www.youtube.com/watch?v=s-kdRdzxdZQ)
+
 # To the demo
 
 See [the nascent
@@ -196,3 +267,5 @@ notebook](https://github.com/lisds/dsip-student/blob/main/talks/exploring_vaccin
 # The end
 
 Talk materials at <https://github.com/lisds/dsip-student>.
+
+# References
