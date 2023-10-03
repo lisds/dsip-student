@@ -32,3 +32,43 @@ The methodology article: <https://www.ons.gov.uk/peoplepopulationandcommunity/bi
 
 Also see the "Notes" worksheet in the file below.
 
+```{python}
+# ls
+```
+
+```{python}
+table_4 = pd.read_excel('referencetableaug2023.xlsx', 'Table 4', header=3)
+table_4.tail()
+```
+
+```{python}
+table_4['Cause of Death'].value_counts()
+```
+
+```{python}
+all_causes = table_4[table_4['Cause of Death'] == 'All causes']
+all_causes.tail()
+```
+
+```{python}
+all_causes['Vaccination status'].value_counts()
+```
+
+```{python}
+all_causes['is_vaccinated'] = all_causes['Vaccination status'] != 'Unvaccinated'
+all_causes.head()
+```
+
+```{python}
+sm_col = 'Age-standardised mortality rate / 100,000 person-years'
+no_xes = all_causes[all_causes[sm_col] != 'x']
+no_xes.head(20)
+```
+
+```{python}
+no_xes.groupby('is_vaccinated')[sm_col].mean()
+```
+
+```{python}
+no_xes.groupby(['Age group', 'is_vaccinated'])[sm_col].mean()
+```
