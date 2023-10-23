@@ -1,0 +1,62 @@
+---
+jupyter:
+  jupytext:
+    notebook_metadata_filter: all,-language_info
+    split_at_heading: true
+    text_representation:
+      extension: .Rmd
+      format_name: rmarkdown
+      format_version: '1.2'
+      jupytext_version: 1.15.2
+  kernelspec:
+    display_name: Python 3 (ipykernel)
+    language: python
+    name: python3
+---
+
+```{python}
+import pandas as pd
+pd.set_option('mode.copy_on_write', True)
+
+import statsmodels.formula.api as smf
+
+# We will come onto this soon
+import plotly.express as px
+```
+
+```{python}
+df = pd.read_csv('../data/premier_league_2021.csv')
+df
+```
+
+```{python}
+px.scatter(df, x='defense', y='goal_difference')
+```
+
+```{python}
+px.scatter(df, x='forward', y='goal_difference')
+```
+
+```{python}
+smf.ols('goal_difference ~ defense', data=df).fit().summary()
+```
+
+```{python}
+smf.ols('goal_difference ~ forward', data=df).fit().summary()
+```
+
+```{python}
+smf.ols('goal_difference ~ defense + forward', data=df).fit().summary()
+```
+
+```{python}
+fig = px.scatter_3d(df,
+                    x='defense', 
+                    y='forward', 
+                    z='goal_difference')
+fig.show()
+```
+
+```{python}
+
+```
