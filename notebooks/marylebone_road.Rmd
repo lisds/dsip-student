@@ -1,0 +1,35 @@
+---
+jupyter:
+  jupytext:
+    notebook_metadata_filter: all,-language_info
+    split_at_heading: true
+    text_representation:
+      extension: .Rmd
+      format_name: rmarkdown
+      format_version: '1.2'
+      jupytext_version: 1.15.2
+  kernelspec:
+    display_name: Python 3 (ipykernel)
+    language: python
+    name: python3
+---
+
+```{python}
+import numpy as np
+import pandas as pd
+pd.set_option('mode.copy_on_write', True)
+import matplotlib.pyplot as plt
+# %matplotlib inline
+```
+
+Our data are for the Marylebone road monitoring station, 2022: <https://uk-air.defra.gov.uk/data/flat_files?site_id=MY1>
+
+
+The file is [here](./data/MY1_2022.csv)
+
+```{python}
+# A first go
+pd.read_csv('data/MY1_2022.csv').head()
+```
+
+Now to the task.
