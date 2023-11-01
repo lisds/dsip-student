@@ -1,0 +1,287 @@
+---
+jupyter:
+  jupytext:
+    notebook_metadata_filter: all,-language_info
+    split_at_heading: true
+    text_representation:
+      extension: .Rmd
+      format_name: rmarkdown
+      format_version: '1.2'
+      jupytext_version: 1.15.2
+  kernelspec:
+    display_name: Python 3 (ipykernel)
+    language: python
+    name: python3
+---
+
+# Dates, times and pollution
+
+```{python}
+import numpy as np
+import pandas as pd
+pd.set_option('mode.copy_on_write', True)
+import matplotlib.pyplot as plt
+# %matplotlib inline
+```
+
+We are interested in the levels of various types of air pollution in London.
+
+Our data are from the Marylebone road air quality monitoring station, from
+2022: <https://uk-air.defra.gov.uk/data/flat_files?site_id=MY1>
+
+The file is [here](./data/MY1_2022.csv)
+
+Let's give a first go at reading in the data (it fails):
+
+```{python tags=c("raises-exception")}
+pd.read_csv('data/MY1_2022.csv').head()
+```
+
+Remember to read the last bit of the error message (*stacktrace*) first.
+
+We then might like to look at the file to see what is going on.  We could do
+that in a file browser, or open the file in the JupyterLab editor, but we can
+also read in the file with the standard Python tools for working with files,
+like this:
+
+```{python}
+# Import class for dealing with files on disk.
+from pathlib import Path
+
+# Make a path object for the file.
+data_path = Path('data/MY1_2022.csv')
+
+# Read in the file as one long string.
+contents = data_path.read_text()
+
+# Split into lines at line endings.
+lines = contents.splitlines()
+
+# Show the first 8 lines:
+for i in range(8):
+    print('Line', i, ':', lines[i])
+```
+
+This reveals that the CSV file starts with four lines before the line that defines the column names.  We can tell Pandas to skip those lines when reading the file:
+
+```{python}
+df = pd.read_csv('data/MY1_2022.csv', skiprows=4)
+df.head()
+```
+
+Here are the column names.  Notice the very long names for the columns giving
+the particulate matter (PM) concentrations for less than 10 micrometers (PM10)
+and less than 2.5 micrometers (PM2.5).  See this [UK National Statistics page
+on Particulate matter
+(PM10/PM2.5)]([https://www.gov.uk/government/statistics/air-quality-statistics/concentrations-of-particulate-matter-pm10-and-pm25)
+
+```{python}
+list(df)
+```
+
+Rename the PM2.5 and PM10 columns.
+
+```{python}
+df = df.rename(columns={
+   'PM<sub>2.5</sub> particulate matter (Hourly measured)': 'PM2p5',
+   'PM<sub>10</sub> particulate matter (Hourly measured)': 'PM10',
+})
+df.head()
+```
+
+We would like to do plots by date and time.  To do this, we need to create
+Python values that record dates and times, called *datetime* objects.
+
+Notice the `dtypes` of the data frame columns.  The 'Date' and 'time' columns
+are of type `object`, meaning (in practice) that they contain strings
+(sequences of text characters).
+
+```{python}
+df.dtypes
+```
+
+We will use the 'Date' and 'time' columns to make Python datetime objects.  Here are the first few values of each column:
+
+```{python}
+df['Date'].head()
+```
+
+```{python}
+df['time'].head()
+```
+
+The first move is to put these two columns together to make a new string value
+that has *both* the date and the time.
+
+
+```{python}
+dt_strs = df['Date'] + ' ' + df['time']
+dt_strs.head(26)
+```
+
+We've show the first 26 values to show what happens when we get to the end of a 24 hour day.
+
+We can try and convert these strings into datetime objects using the standard Pandas `to_datetime` function, but this will fail at the moment:
+
+```{python tags=c("raises-exception")}
+dts = pd.to_datetime(dt_str)
+```
+
+Again - read the last part of the error.  Pandas is running into trouble because of the `24:00` time - it isn't expect `24:00` - instead preferring `00:00` for midnight.  We can fix this error (but see below) by replacing `24:00` with `00:00`:
+
+```{python}
+dt_strs = df['Date'] + ' ' + df['time'].str.replace('24:00', '00:00')
+dt_strs.head(26)
+```
+
+Let's try to convert these strings.  Oh no, another error:
+
+```{python tags=c("raises-exception")}
+dts = pd.to_datetime(dt_strs)
+```
+
+What's going on this time?  The error message gives the clue:
+
+```
+time data "13-01-2022 01:00" doesn't match format "%m-%d-%Y %H:%M"
+```
+
+Pandas started reading the dates in US style, with month first, but then hit a "month" of 13, and gave an error.
+
+Looking at the suggestions in the error correctly suggests that we can fix it with:
+
+```{python}
+dts = pd.to_datetime(dt_strs, dayfirst=True)
+dts.head(26)
+```
+
+But wait - we still have a problem.  Notice the datetime for row label 22 and 23:
+
+```{python}
+dts.loc[22:23]
+```
+
+Before the replace operation, we had:
+
+```
+01-01-2022 24:00
+```
+
+After, we had:
+
+```
+01-01-2022 00:00
+```
+
+But `01-01-2022 24:00` means midnight of the night of 1st January to 2nd January, and so the correct date should be (in string form):
+
+```
+02-01-2022 00:00
+```
+
+We can fix that by adding a day to all the `00:00` dates.
+
+Pandas has `timedelta` objects to represent a time interval, for example:
+
+```{python}
+pd.to_timedelta('1 day')
+```
+
+So we can fix the 00:00 datetimes with:
+
+```{python}
+def fix_midnight(dt):
+    if dt.hour == 0:  # This is an 00:00 time.
+        dt = dt + pd.to_timedelta('1 day')
+    return dt
+
+fixed_dts = dts.apply(fix_midnight)
+fixed_dts.head(26)
+```
+
+We put that back into the dataframe:
+
+```{python}
+df['Datetime'] = fixed_dts
+df.head()
+```
+
+Now we can use Pandas plotting to plot, for example, `PM10` concentrations as a function of time:
+
+```{python}
+df.plot(x='Datetime', y='PM10')
+```
+
+In fact, we will make our lives easier by replacing the default row labels with the datetime values:
+
+```{python}
+labeled = df.set_index('Datetime')
+labeled.head()
+```
+
+This allows us to use the datetimes as the default x axis on our plots.
+
+```{python}
+labeled.plot(y='PM10')
+```
+
+We can also pull out the invididual columns as series, and the datetime labels come with the values:
+
+```{python}
+labeled['PM10'].plot()
+```
+
+The plot is a bit noisy because we have 24 values for each day, and therefore, many values.  We might want to take the average value for - say - PM2.5 and PM10 for each day.  We can do this with the `resample` method of the data frame and the series.  We send `resample` the time period we want to sample for.  Here we use `1D` to mean one day.  Then `mean` takes the average of the values over the course of the day.
+
+```{python}
+# Data frame
+by_day = labeled[['PM2p5', 'PM10']].resample('1D').mean()
+by_day
+```
+
+```{python}
+by_day['PM10'].plot()
+plt.title('PM2.5 values averaged over the day')
+```
+
+We could also have averaged over the month:
+
+```{python}
+(labeled[['PM2p5', 'PM10']]
+ .resample('1M').mean()
+ ['PM10'].plot()
+)
+```
+
+We might also be interested in the way that PM2.5 values change over the day of the week, where 0 = Monday.  We can get this value from the `dayofweek` attribute of the datetime things.
+
+```{python}
+a_dt = dts.iloc[0]
+a_dt
+```
+
+```{python}
+# What day of the week is it?
+a_dt.dayofweek
+```
+
+```{python}
+# What is the name of this weekday?
+a_dt.day_name()
+```
+
+Remember the datetime things are now the index (row labels) of the data frame.
+
+```{python}
+labeled['dow'] = labeled.index.dayofweek
+labeled.head()
+```
+
+```{python}
+mean_by_dow = labeled.groupby('dow')['PM10'].mean()
+mean_by_dow
+```
+
+```{python}
+mean_by_dow.plot()
+```
